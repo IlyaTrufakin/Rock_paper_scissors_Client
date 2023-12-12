@@ -8,5 +8,69 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="5*"/>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="1*"/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+
+
+
+        <DockPanel Grid.Row="0" Background="#FFADADAD">
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center">Enter IP address:</Label>
+            <TextBox x:Name="ipAddress" DockPanel.Dock="Left" Width="100" VerticalAlignment="Center" Text="127.0.0.1"></TextBox>
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center" >Enter port number:</Label>
+            <TextBox x:Name="portNumber" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="8005"></TextBox>
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center">login:</Label>
+            <TextBox x:Name="login" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="ilya"></TextBox>
+            <Label DockPanel.Dock="Left" VerticalAlignment="Center" >password:</Label>
+            <TextBox x:Name="password" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="trufakin"></TextBox>
+            <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="70" HorizontalAlignment="Right" Click="Button_Click">Connect</Button>
+            <Button x:Name="SendMessageButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="SendMessageButton_Click">Send Message</Button>
+        </DockPanel>
+
+        <TextBlock Grid.Row="1" Text="События:" Height="25" Padding="5,3,0,3" Background="PowderBlue" VerticalAlignment="Center" />
+
+        <ScrollViewer x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Grid.Row="2" Padding="5,5,5,5" >
+            <TextBlock x:Name="OutputWindow"  Background="White" TextWrapping="WrapWithOverflow" />
+        </ScrollViewer>
+
+        <TextBlock Height="100" Padding="5,2,0,0" Grid.Row="3" Background="PowderBlue" TextWrapping="Wrap" VerticalAlignment="Center">
+        Ввод команд к серверу:<LineBreak/> <LineBreak/> 
+        bye - для закрытия соединения<LineBreak/>
+        time - получить время и дату на сервере<LineBreak/>
+        info - получить тип операц. системы сервера<LineBreak/>
+        getQuote - для получения ответа от сервера - случайной цитаты
+        </TextBlock>
+
+
+        <TextBox x:Name="InputWindow" Grid.Row="4" BorderThickness="0"  Padding="3,5,5,5" KeyDown="InputWindow_KeyDown"/>
+
+
+
+        <StatusBar  Grid.Row="5" Height="25"  Background="PowderBlue"  >
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <StatusBarItem Grid.Column="0" Margin="0,0,15,0" Height="23"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="#FF91B3B7">
+                    <TextBlock x:Name="Status1"  Padding="5,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                </StatusBarItem>
+                <StatusBarItem Grid.Column="1" Margin="0,0,15,0" Height="23" HorizontalAlignment="Stretch"   VerticalAlignment="Center" Background="#FF91B3B7">
+                    <TextBlock x:Name="Status2"  Padding="5,0,10,0" VerticalAlignment="Center"   HorizontalAlignment="Stretch" Text="DFG"/>
+                </StatusBarItem>
+                <StatusBarItem  Grid.Column="2" Margin="0,0,15,0" Height="23" HorizontalAlignment="Stretch"  VerticalAlignment="Center" Background="#FF91B3B7">
+                    <TextBlock x:Name="Status3"  Padding="5,0,10,0" VerticalAlignment="Center"   HorizontalAlignment="Stretch" Text="test"/>
+                </StatusBarItem>
+            </Grid>
+        </StatusBar>
+
+
     </Grid>
 </Window>
