@@ -11,6 +11,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="25"/>
+            <RowDefinition Height="25"/>
+            <RowDefinition Height="45"/>
             <RowDefinition Height="5*"/>
             <RowDefinition Height="100"/>
             <RowDefinition Height="1*"/>
@@ -24,21 +26,48 @@
             <TextBox x:Name="ipAddress" DockPanel.Dock="Left" Width="100" VerticalAlignment="Center" Text="127.0.0.1"></TextBox>
             <Label DockPanel.Dock="Left" VerticalAlignment="Center" >Enter port number:</Label>
             <TextBox x:Name="portNumber" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="8005"></TextBox>
-            <Label DockPanel.Dock="Left" VerticalAlignment="Center">login:</Label>
-            <TextBox x:Name="login" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="ilya"></TextBox>
-            <Label DockPanel.Dock="Left" VerticalAlignment="Center" >password:</Label>
-            <TextBox x:Name="password" DockPanel.Dock="Left" Width="50" VerticalAlignment="Center" Text="trufakin"></TextBox>
             <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="70" HorizontalAlignment="Right" Click="Button_Click">Connect</Button>
             <Button x:Name="SendMessageButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="SendMessageButton_Click">Send Message</Button>
         </DockPanel>
 
-        <TextBlock Grid.Row="1" Text="События:" Height="25" Padding="5,3,0,3" Background="PowderBlue" VerticalAlignment="Center" />
 
-        <ScrollViewer x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Grid.Row="2" Padding="5,5,5,5" >
+        <DockPanel  Grid.Row="1" Background="PowderBlue">
+            <TextBlock DockPanel.Dock="Left" Text="ИГРА: КАМЕНЬ - НОЖНИЦЫ - БУМАГА" Height="25" Padding="5,3,0,3"  VerticalAlignment="Center" />
+            <TextBox  DockPanel.Dock="Right" Text="TextBox" Width="30" VerticalAlignment="Center"/>
+            <TextBlock DockPanel.Dock="Right" Text="РАУНД:" Height="25" Padding="5,3,0,3"  VerticalAlignment="Center" />
+            <TextBlock DockPanel.Dock="Right" Text="" Height="25" Padding="5,3,0,3"  VerticalAlignment="Center" />
+
+        </DockPanel>
+
+
+
+
+
+        <DockPanel  Grid.Row="2">
+            <TextBlock DockPanel.Dock="Left" Text="ВЫБЕРИТЕ СВОЙ ИГРОВОЙ ОБЪЕКТ:" Height="25" Padding="5,3,0,3" Background="PowderBlue" VerticalAlignment="Center" />
+
+        </DockPanel>
+
+        <DockPanel  Grid.Row="3">
+            <Button DockPanel.Dock="Left" x:Name="RockButton" Height="40" Width="80" Margin="5,0,5,0">КАМЕНЬ</Button>
+            <Button DockPanel.Dock="Left" x:Name="ScissorsButton" Height="40" Width="80" Margin="5,0,5,0">НОЖНИЦЫ</Button>
+            <Button DockPanel.Dock="Left" x:Name="PaperButton" Height="40" Width="80" Margin="5,0,5,0">БУМАГА</Button>
+            <Button DockPanel.Dock="Right" x:Name="RandomStepButton" Height="40" Width="100" Margin="5,0,5,0" FontSize="10">
+                <StackPanel>
+                    <TextBlock TextAlignment="Center">АВТОМАТИЧЕСКАЯ</TextBlock>
+                    <TextBlock TextAlignment="Center">ИГРА</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button DockPanel.Dock="Right" x:Name="I_give_upButton" Height="40" Width="120" Margin="5,0,5,0">ЗДАЮСЬ</Button>
+            <Button DockPanel.Dock="Right" x:Name="StandoffButton" Height="40" Width="120" Margin="5,0,5,0">НИЧЬЯ?</Button>
+        </DockPanel>
+
+
+        <ScrollViewer x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Grid.Row="4" Padding="5,5,5,5" >
             <TextBlock x:Name="OutputWindow"  Background="White" TextWrapping="WrapWithOverflow" />
         </ScrollViewer>
 
-        <TextBlock Height="100" Padding="5,2,0,0" Grid.Row="3" Background="PowderBlue" TextWrapping="Wrap" VerticalAlignment="Center">
+        <TextBlock Height="100" Padding="5,2,0,0" Grid.Row="5" Background="PowderBlue" TextWrapping="Wrap" VerticalAlignment="Center">
         Ввод команд к серверу:<LineBreak/> <LineBreak/> 
         bye - для закрытия соединения<LineBreak/>
         time - получить время и дату на сервере<LineBreak/>
@@ -47,11 +76,11 @@
         </TextBlock>
 
 
-        <TextBox x:Name="InputWindow" Grid.Row="4" BorderThickness="0"  Padding="3,5,5,5" KeyDown="InputWindow_KeyDown"/>
+        <TextBox x:Name="InputWindow" Grid.Row="6" BorderThickness="0"  Padding="3,5,5,5" KeyDown="InputWindow_KeyDown"/>
 
 
 
-        <StatusBar  Grid.Row="5" Height="25"  Background="PowderBlue"  >
+        <StatusBar  Grid.Row="7" Height="25"  Background="PowderBlue"  >
             <Grid >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
