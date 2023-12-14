@@ -37,26 +37,41 @@ namespace Rock_paper_scissors_Client
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            string connectionResult = clientCommunication.ConnectToServer(ipAddress.Text, portNumber.Text);
-            OutputWindow.Text += connectionResult + Environment.NewLine;
-            SendMessageButton.IsEnabled = clientCommunication.IsConnected();
-            ScrollTextBlock.ScrollToEnd();
-            if (clientCommunication.IsConnected())
+            if (IsServerCheckBox.IsChecked == true)
             {
                 try
                 {
-                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"login:");
-                    OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    ServerCommunication server = new ServerCommunication("127.0.0.1", 8005);
+                    server.Start();
                 }
                 catch (Exception ex)
                 {
-                    OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                    OutputWindow.Text += "Произошла ошибка: " + ex.Message + Environment.NewLine;
                 }
-
             }
             else
             {
-                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+                string connectionResult = clientCommunication.ConnectToServer(ipAddress.Text, portNumber.Text);
+                OutputWindow.Text += connectionResult + Environment.NewLine;
+                SendMessageButton.IsEnabled = clientCommunication.IsConnected();
+                ScrollTextBlock.ScrollToEnd();
+                if (clientCommunication.IsConnected())
+                {
+                    try
+                    {
+                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"login:");
+                        OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    }
+                    catch (Exception ex)
+                    {
+                        OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                    }
+
+                }
+                else
+                {
+                    OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+                }
             }
         }
 
@@ -147,6 +162,21 @@ namespace Rock_paper_scissors_Client
             }
 
 
+
+        }
+
+
+
+        private void IsServerCheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (IsServerCheckBox.IsChecked == true)
+            {
+                ConnectButton.Content = "Start server";
+            }
+            else
+            {
+                ConnectButton.Content = "Connect to server";
+            }
 
         }
     }

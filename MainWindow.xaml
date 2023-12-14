@@ -25,8 +25,8 @@
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="600"/>
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
 
@@ -36,10 +36,10 @@
             <Label DockPanel.Dock="Left" VerticalAlignment="Center" >Enter port number:</Label>
             <TextBox DockPanel.Dock="Left" x:Name="portNumber" Width="50" VerticalAlignment="Center" Text="8005"></TextBox>
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                <CheckBox VerticalAlignment="Center" x:Name="IsServerCheckBox" Margin="15,0,5,0"></CheckBox>
+                <CheckBox VerticalAlignment="Center" x:Name="IsServerCheckBox" Margin="15,0,5,0" Click="IsServerCheckBox_Click"/>
                 <TextBlock VerticalAlignment="Center">Запустить как сервер</TextBlock>
             </StackPanel>
-            <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="Button_Click">Connect</Button>
+            <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="110" HorizontalAlignment="Right" Click="Button_Click" Content="Connect"></Button>
             <Button x:Name="SendMessageButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="SendMessageButton_Click">Send Message</Button>
         </DockPanel>
 
@@ -71,7 +71,13 @@
             </Grid>
 
 
-            <Grid Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" Background="PowderBlue" >
+            <Grid Grid.Row="1" Grid.Column="0"  Grid.ColumnSpan="3" HorizontalAlignment="Stretch"  VerticalAlignment="Stretch" >
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="PowderBlue"/>
+                        <GradientStop Color="#FF5AC0CC" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
@@ -194,11 +200,11 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" Margin="0" Background="#FFE2F7F5">
+        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" Margin="0" Background="#FF505050">
             <!-- область вывода сетевых данных -->
-            <TextBlock VerticalAlignment="Center" Background="#FFAFC6C7" TextAlignment="Center">Обмен сетевыми данными</TextBlock>
+            <TextBlock VerticalAlignment="Center" Background="#FFBBBBBB" TextAlignment="Center" Foreground="#FF464646">Обмен сетевыми данными</TextBlock>
             <ScrollViewer x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Grid.Row="4" Padding="5,5,5,5" >
-                <TextBlock x:Name="OutputWindow" TextWrapping="WrapWithOverflow" />
+                <TextBlock x:Name="OutputWindow" TextWrapping="WrapWithOverflow" Foreground="#FFE8E8E8" />
             </ScrollViewer>
         </StackPanel>
 
