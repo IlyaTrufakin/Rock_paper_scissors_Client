@@ -45,7 +45,7 @@ namespace Rock_paper_scissors_Client
             {
                 try
                 {
-                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"login:{login.Text}:{password.Text}");
+                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"login:");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
                 }
                 catch (Exception ex)
