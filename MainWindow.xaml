@@ -124,7 +124,7 @@
 
                 <DockPanel  Grid.Row="2"  HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button  x:Name="PaperButton" Height="30" Width="70" Margin="5">БУМАГА</Button>
+                        <Button  x:Name="PaperButton" Height="30" Width="70" Margin="5" Click="PaperButton_Click">БУМАГА</Button>
                         <Button  x:Name="ScissorsButton" Height="30" Width="70" Margin="5">НОЖНИЦЫ</Button>
                         <Button  x:Name="RockButton" Height="30" Width="70" Margin="5">КАМЕНЬ</Button>
                     </StackPanel>

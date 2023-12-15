@@ -19,6 +19,24 @@ namespace Rock_paper_scissors_Client
         private object lockObject = new object(); // для блокировки доступа нескольких потоков к изменяемому объекту
         public event EventHandler<string> NetworkCommandReceived;
         public event EventHandler<string> ErrorOccurred;
+        public event EventHandler<string> ServicesMessagesServer;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+
+        private string serverMessages;
+        public string ServerMessages
+        {
+            get { return serverMessages; }
+            set
+            {
+                if (value != serverMessages)
+                {
+                    serverMessages = value;
+                    OnPropertyChanged(nameof(ServerMessages));
+                }
+            }
+        }
+
 
         private string networkCommand;
         public string NetworkCommand
@@ -58,15 +76,15 @@ namespace Rock_paper_scissors_Client
             }
             catch (FormatException ex)
             {
-                //Console.WriteLine("Ошибка IP-адреса: " + ex.Message);
+                HandleError("Ошибка IP-адреса: " + ex.Message);
             }
             catch (ArgumentException ex)
             {
-                //Console.WriteLine("Ошибка в аргументах: " + ex.Message);
+                HandleError("Ошибка в аргументах: " + ex.Message);
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("Произошла ошибка: " + ex.Message);
+                HandleError("Произошла ошибка: " + ex.Message);
             }
         }
 
@@ -78,28 +96,26 @@ namespace Rock_paper_scissors_Client
             {
                 listenSocket.Bind(ipPoint);
                 listenSocket.Listen(10);
-                //Console.WriteLine("Server start listen...");
+                ServerServicesMessages("Server start listen...");
 
                 while (true)
                 {
-                    Socket handler =await listenSocket.AcceptAsync();
+                    Socket handler = await listenSocket.AcceptAsync();
                     AddClient(handler);
 
-                    //Console.WriteLine($"Client connected:  {connectedClients[handler]} IP({handler.RemoteEndPoint})");
-                    //Console.WriteLine($"\tList of connected clients: ");
+                    ServerServicesMessages($"Client connected:  {connectedClients[handler]} IP({handler.RemoteEndPoint})");
+                    ServerServicesMessages($"\tList of connected clients: ");
                     foreach (var clients in connectedClients)
                     {
-                        //Console.WriteLine($"\t- {clients.Value} IP({clients.Key.RemoteEndPoint})");
+                        ServerServicesMessages($"\t- {clients.Value} IP({clients.Key.RemoteEndPoint})");
                     }
 
                     ThreadPool.QueueUserWorkItem(new WaitCallback(HandleClient), handler);
-                    //Console.WriteLine("Создан поток: " + clientThread.GetHashCode());
-
                 }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                HandleError(ex.Message);
             }
         }
 
@@ -116,13 +132,13 @@ namespace Rock_paper_scissors_Client
         }
 
 
-
+        // private string Server
 
 
         private void HandleClient(object obj)
         {
             Socket handler = (Socket)obj;
-           
+            ServerServicesMessages("Соккет клиента получен");
             try
             {
 
@@ -138,51 +154,39 @@ namespace Rock_paper_scissors_Client
                         receivedString.Append(Encoding.Unicode.GetString(data, 0, receivedBytes));
                     } while (handler.Available > 0);
 
-                    string[] StringParts = receivedString.ToString().Split(':');
+                    //string[] StringParts = receivedString.ToString().Split(':');
+                    string StringParts = receivedString.ToString();
 
-                    if (StringParts[0] != "timeQuiet") // когда клиент запрашивает время в автоматическом режиме, не выводим об этом инфо в консоль
+                    if (StringParts != "timeQuiet") // когда клиент запрашивает время в автоматическом режиме, не выводим об этом инфо в консоль
                     {
-                        //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + StringParts[0] + $"  (from {connectedClients[handler]})");
+                        ServerServicesMessages(DateTime.Now.ToShortTimeString() + ": " + StringParts + $"  (from {connectedClients[handler]})");
                     }
 
 
-                    if (StringParts[0] == "login") // когда клиент подключается и присылает логин и пароль
-                    {
-                        //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": " + StringParts[0] + $"  (from {connectedClients[handler]})" + $"Идентификация клиента: {StringParts[0]} : {StringParts[1]} : {StringParts[2]}");
-
-                        if (connectedClients.Count > maxClients)
-                        {
-                            StringParts[0] = "maxсonnectionlimit";
-                        }
-
-                    }
-
-                    string response = ProcessRequest(StringParts[0]); // обработка строки запроса от клиента
+                    ReceiveNetworkCommand(StringParts);
+                    string response = ProcessRequest(StringParts); // обработка строки запроса от клиента
 
                     handler.Send(Encoding.Unicode.GetBytes(response)); // отправка ответа клиенту
 
-                    if (response == "Closing" || StringParts[0] == "reject" || StringParts[0] == "maxсonnectionlimit") // отработка запроса клиента на закрытие соединения
+                    if (response == "Closing" || StringParts == "maxсonnectionlimit") // отработка запроса клиента на закрытие соединения
                     {
-                        //Console.Write($"{connectedClients[handler]} - Closing connection...");
+                        ServerServicesMessages($"{connectedClients[handler]} - Closing connection...");
                         break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                HandleError(ex.Message);
             }
             finally
             {
                 connectedClients.Remove(handler);
                 handler.Shutdown(SocketShutdown.Both);
-                //Console.WriteLine("Connection closed");
+                ServerServicesMessages("Connection closed");
                 handler.Close();
 
             }
-
-
-
         }
 
 
@@ -197,8 +201,8 @@ namespace Rock_paper_scissors_Client
                     response = DateTime.Now.ToString();
                     break;
 
-                case "login":
-                    response = ($"Идентификация клиента осуществлена: {request}");
+                case "paper":
+                    response = ($"paper");
                     break;
 
                 case "reject":
@@ -210,8 +214,8 @@ namespace Rock_paper_scissors_Client
                     break;
 
 
-                case "timequiet":
-                    response = DateTime.Now.ToString();
+                case "newgame":
+                    response = ($"newgame");
                     break;
 
                 case "info":
@@ -219,9 +223,7 @@ namespace Rock_paper_scissors_Client
                     break;
 
                 case "get":
-                    //Console.WriteLine("Запрошен ручной ответ, напишите что-нибудь клиенту: ");
                     response = Environment.OSVersion.ToString();
-                    //response = Console.ReadLine();
                     break;
 
                 case "bye":
@@ -237,7 +239,15 @@ namespace Rock_paper_scissors_Client
         }
 
 
-   
+
+        // Метод для обработки сообщений сервера
+        public void ServerServicesMessages(string messages)
+        {
+            ServerMessages = messages;
+            ServicesMessagesServer?.Invoke(this, messages);
+        }
+
+
 
         // Метод для обработки сетевых команд
         public void ReceiveNetworkCommand(string command)
@@ -247,14 +257,14 @@ namespace Rock_paper_scissors_Client
         }
 
         // Метод для обработки ошибок
-        public void HandleError(Exception ex)
+        public void HandleError(string errorMessage)
         {
-            ErrorMessage = ex.Message;
-            ErrorOccurred?.Invoke(this, ex.Message);
+            ErrorMessage = errorMessage;
+            ErrorOccurred?.Invoke(this, errorMessage);
         }
 
 
-        public event PropertyChangedEventHandler PropertyChanged;
+
 
         protected virtual void OnPropertyChanged(string propertyName)
         {

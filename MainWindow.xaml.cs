@@ -19,13 +19,11 @@ namespace Rock_paper_scissors_Client
     {
         private DispatcherTimer timer;
         private ClientCommunication clientCommunication;
-        private string Password = "trufakin";
-        private string Login = "ilya";
+        private ServerCommunication server;
 
         public MainWindow()
         {
             InitializeComponent();
-            clientCommunication = new ClientCommunication();
 
             // Создаем таймер и устанавливаем интервал на 1 секунду
             timer = new DispatcherTimer();
@@ -41,7 +39,10 @@ namespace Rock_paper_scissors_Client
             {
                 try
                 {
-                    ServerCommunication server = new ServerCommunication("127.0.0.1", 8005);
+                    server = new ServerCommunication("127.0.0.1", 8005);
+                    server.NetworkCommandReceived += ServerCommunication_NetworkCommandReceived;
+                    server.ErrorOccurred += ServerCommunication_ErrorOccurred;
+                    server.ServicesMessagesServer += ServerCommunication_ServicesMessagesServer;
                     server.Start();
                 }
                 catch (Exception ex)
@@ -51,6 +52,7 @@ namespace Rock_paper_scissors_Client
             }
             else
             {
+                clientCommunication = new ClientCommunication();
                 string connectionResult = clientCommunication.ConnectToServer(ipAddress.Text, portNumber.Text);
                 OutputWindow.Text += connectionResult + Environment.NewLine;
                 SendMessageButton.IsEnabled = clientCommunication.IsConnected();
@@ -59,7 +61,7 @@ namespace Rock_paper_scissors_Client
                 {
                     try
                     {
-                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"login:");
+                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"newgame");
                         OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
                     }
                     catch (Exception ex)
@@ -76,6 +78,7 @@ namespace Rock_paper_scissors_Client
         }
 
 
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SendMessageButton.IsEnabled = false;
@@ -83,7 +86,7 @@ namespace Rock_paper_scissors_Client
 
         private async void Timer_Tick(object sender, EventArgs e) // получаем время с серврера каждую секунду
         {
-            if (clientCommunication.IsConnected())
+  /*          if (clientCommunication.IsConnected())
             {
                 try
                 {
@@ -101,7 +104,7 @@ namespace Rock_paper_scissors_Client
             {
                 Status1.Text = "Время Сервера: не доступно";
                 Status2.Text = "Соединение с сервером: не установлено";
-            }
+            }*/
         }
 
 
@@ -160,9 +163,6 @@ namespace Rock_paper_scissors_Client
                 }
                 ScrollTextBlock.ScrollToEnd();
             }
-
-
-
         }
 
 
@@ -179,5 +179,60 @@ namespace Rock_paper_scissors_Client
             }
 
         }
+
+        private async void PaperButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (clientCommunication.IsConnected())
+            {
+                if (InputWindow.Text.Length > 0)
+                {
+                    try
+                    {
+                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync("paper");
+                        OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    }
+                    catch (Exception ex)
+                    {
+                        OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                    }
+                }
+            }
+            else
+            {
+                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+            }
+            ScrollTextBlock.ScrollToEnd();
+        }
+
+
+        // Обработка сетевых команд от сервера
+        private void ServerCommunication_NetworkCommandReceived(object sender, string command)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                OutputWindow.Text += "Команда серверу: " + command + Environment.NewLine;
+            });
+        }
+
+        // Обработка сообщений ошибок сервера
+        private void ServerCommunication_ErrorOccurred(object sender, string errorMessages)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                OutputWindow.Text += "Ошибка сервера: " + errorMessages + Environment.NewLine;
+            });
+        }
+
+
+
+        // Обработка служебных сообщений от сервера
+        private void ServerCommunication_ServicesMessagesServer(object sender, string command)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                OutputWindow.Text += "Сообщение сервера: " + command + Environment.NewLine;
+            });
+        }
+
     }
 }
