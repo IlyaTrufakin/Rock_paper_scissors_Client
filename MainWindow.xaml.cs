@@ -175,10 +175,22 @@ namespace Rock_paper_scissors_Client
             if (IsServerCheckBox.IsChecked == true)
             {
                 ConnectButton.Content = "Start server";
+                PaperButton.IsEnabled = false;
+                ScissorsButton.IsEnabled = false;
+                RockButton.IsEnabled = false;
+                RandomStepButton.IsEnabled = false;
+                I_give_upButton.IsEnabled = false;
+                StandoffButton.IsEnabled = false;
             }
             else
             {
                 ConnectButton.Content = "Connect to server";
+                PaperButton.IsEnabled = true;
+                ScissorsButton.IsEnabled = true;
+                RockButton.IsEnabled = true;
+                RandomStepButton.IsEnabled = true;
+                I_give_upButton.IsEnabled = true;
+                StandoffButton.IsEnabled = true;
             }
 
         }
@@ -192,7 +204,6 @@ namespace Rock_paper_scissors_Client
                 {
                     string response = await clientCommunication.SendMessageAndReceiveResponseAsync("paper");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
-                    OutputWindow.Text += "результат раунда: " + game.PlayRound(1) + Environment.NewLine;
                 }
                 catch (Exception ex)
                 {
@@ -214,6 +225,7 @@ namespace Rock_paper_scissors_Client
             Dispatcher.Invoke(() =>
             {
                 OutputWindow.Text += "Команда серверу: " + command + Environment.NewLine;
+                GameHandler(command);
             });
         }
 
@@ -237,5 +249,69 @@ namespace Rock_paper_scissors_Client
             });
         }
 
+
+        private void GameHandler(string command)
+        {
+            var signKey = game.Sign.FirstOrDefault(x => x.Value == command).Key;
+
+            if (signKey != 0) // Проверяем, было ли найдено соответствие
+            {
+                OutputWindow.Text += "результат раунда: " + game.Play(signKey) + Environment.NewLine;
+                VyctoryTextBlock.Text = game.Victory.ToString();
+                DrawTextBlock.Text = game.Score_Draw.ToString();
+                DefeatTextBlock.Text = game.Defeats.ToString();
+                GameRoundTextBlock.Text = game.Round.ToString() + " РАУНД";
+            }
+            else
+            {
+                OutputWindow.Text += "Неверный выбор: " + command + Environment.NewLine;
+            }
+        }
+
+        private async void ScissorsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (clientCommunication.IsConnected())
+            {
+
+                try
+                {
+                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync("scissors");
+                    OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                }
+                catch (Exception ex)
+                {
+                    OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                }
+
+            }
+            else
+            {
+                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+            }
+            ScrollTextBlock.ScrollToEnd();
+        }
+
+        private async void RockButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (clientCommunication.IsConnected())
+            {
+
+                try
+                {
+                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync("rock");
+                    OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                }
+                catch (Exception ex)
+                {
+                    OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                }
+
+            }
+            else
+            {
+                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+            }
+            ScrollTextBlock.ScrollToEnd();
+        }
     }
 }

@@ -1,27 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Rock_paper_scissors_Client
 {
 
- 
+    [Serializable]
     internal class Game
     {
         public int Round;
         public int Victory;
         public int Defeats;
         public int Score_Draw;
+        public int Plays;
         public Dictionary<int, string> Sign;
         private Random random = new Random();
+        private const int playsCount = 5;
+
         public Game() 
         {
-            Round = 0;  
+            Round = 1;  
             Victory = 0;
             Defeats = 0;
             Score_Draw = 0;
+            Plays = 0;
             Sign = new Dictionary<int, string>
             {
                 { 1, "rock" },
@@ -35,7 +42,7 @@ namespace Rock_paper_scissors_Client
             return random.Next(Sign.Count)+1;
         }
 
-        public string PlayRound(int playerSign, int computerSign = 0)
+        public string Play(int playerSign, int computerSign = 0)
         {
             if (computerSign == 0)
             {
@@ -44,6 +51,13 @@ namespace Rock_paper_scissors_Client
 
             string playerChoice = Sign.ContainsKey(playerSign) ? Sign[playerSign] : "Invalid choice";
             string computerChoice = Sign.ContainsKey(computerSign) ? Sign[computerSign] : "Invalid choice";
+
+            if (Plays >= playsCount)
+            {
+                Round++;
+                Plays = 0;
+            }
+
 
             if (playerChoice == computerChoice)
             {
@@ -62,6 +76,19 @@ namespace Rock_paper_scissors_Client
                 Defeats++;
                 return "You lose!";
             }
+        }
+
+
+        public byte[] SerializeGame()
+        {
+            string jsonString = JsonSerializer.Serialize(this); // сериализуем текущий объект Game в формат JSON
+            return Encoding.UTF8.GetBytes(jsonString); // возвращаем сериализованные данные в виде массива байтов
+        }
+
+        public static Game DeserializeGame(byte[] data)
+        {
+            string jsonString = Encoding.UTF8.GetString(data); // преобразуем массив байтов в строку
+            return JsonSerializer.Deserialize<Game>(jsonString); // десериализуем объект Game из строки JSON
         }
 
 

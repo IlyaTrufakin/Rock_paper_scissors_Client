@@ -39,7 +39,7 @@
                 <CheckBox VerticalAlignment="Center" x:Name="IsServerCheckBox" Margin="15,0,5,0" Click="IsServerCheckBox_Click"/>
                 <TextBlock VerticalAlignment="Center">Запустить как сервер</TextBlock>
             </StackPanel>
-            <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="110" HorizontalAlignment="Right" Click="Button_Click" Content="Connect"></Button>
+            <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="110" HorizontalAlignment="Right" Click="Button_Click" Content="Connect to server"></Button>
             <Button x:Name="SendMessageButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="SendMessageButton_Click">Send Message</Button>
         </DockPanel>
 
@@ -87,11 +87,11 @@
                 <TextBlock  Grid.Column="1" Text="СЧЕТ ТЕКУЩЕГО РАУНДА"  HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="10" />
                 <DockPanel  Grid.Column="0" HorizontalAlignment="Center" >
                     <TextBlock DockPanel.Dock="Left" Style="{StaticResource MyTextBlockStyle}" >ПОБЕДА:</TextBlock>
-                    <TextBlock  Style="{StaticResource MyTextBlockStyle}"/>
+                    <TextBlock x:Name="VyctoryTextBlock" Style="{StaticResource MyTextBlockStyle}"/>
                     <TextBlock DockPanel.Dock="Left" Style="{StaticResource MyTextBlockStyle}">НИЧЬЯ:</TextBlock>
-                    <TextBlock  Style="{StaticResource MyTextBlockStyle}"/>
+                    <TextBlock x:Name="DrawTextBlock" Style="{StaticResource MyTextBlockStyle}"/>
                     <TextBlock DockPanel.Dock="Left" Style="{StaticResource MyTextBlockStyle}">ПОРАЖЕНИЕ:</TextBlock>
-                    <TextBlock  Style="{StaticResource MyTextBlockStyle}"/>
+                    <TextBlock x:Name="DefeatTextBlock" Style="{StaticResource MyTextBlockStyle}"/>
                 </DockPanel>
 
                 <DockPanel  Grid.Column="2" HorizontalAlignment="Center">
@@ -125,8 +125,8 @@
                 <DockPanel  Grid.Row="2"  HorizontalAlignment="Center" VerticalAlignment="Center">
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button  x:Name="PaperButton" Height="30" Width="70" Margin="5" Click="PaperButton_Click">БУМАГА</Button>
-                        <Button  x:Name="ScissorsButton" Height="30" Width="70" Margin="5">НОЖНИЦЫ</Button>
-                        <Button  x:Name="RockButton" Height="30" Width="70" Margin="5">КАМЕНЬ</Button>
+                        <Button  x:Name="ScissorsButton" Height="30" Width="70" Margin="5" Click="ScissorsButton_Click">НОЖНИЦЫ</Button>
+                        <Button  x:Name="RockButton" Height="30" Width="70" Margin="5" Click="RockButton_Click">КАМЕНЬ</Button>
                     </StackPanel>
                     <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Center">
                         <Button DockPanel.Dock="Bottom" x:Name="RandomStepButton" Height="30" Padding="5,0,5,0"  Margin="5">АВТОМАТИЧЕСКАЯ ИГРА (1 РАУНД)</Button>

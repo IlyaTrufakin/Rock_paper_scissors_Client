@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Quotes_Client
+namespace Rock_paper_scissors_Client
 {
     public class ClientCommunication
     {
