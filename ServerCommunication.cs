@@ -221,6 +221,11 @@ namespace Rock_paper_scissors_Client
                     break;
 
 
+                case "gamedata":
+                    response = ($"gamedata");
+                    break;
+
+
                 case "bye":
                     response = "Closing";
                     break;

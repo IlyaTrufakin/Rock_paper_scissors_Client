@@ -171,12 +171,16 @@ namespace Rock_paper_scissors_Client
                 if (command == "newgame")
                 {
                     game.NewGame();
+                    return;
                 }
 
+                if (command != "gamedata")
+                {
+                    GameHandler(command);
+                    ScrollTextBlock.ScrollToEnd();
+                }
+ 
 
-                GameHandler(command);
-                ScrollTextBlock.ScrollToEnd();
-                WindowUpdate();
             });
 
         }
@@ -220,7 +224,7 @@ namespace Rock_paper_scissors_Client
                 OutputWindow.Text += "Неверный выбор: " + command + Environment.NewLine;
             }
             ScrollTextBlock.ScrollToEnd();
-
+            WindowUpdate();
         }
 
         private async void ScissorsButton_Click(object sender, RoutedEventArgs e)
