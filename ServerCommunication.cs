@@ -21,6 +21,14 @@ namespace Rock_paper_scissors_Client
         public event EventHandler<string> ServicesMessagesServer;
         public event PropertyChangedEventHandler PropertyChanged;
         private const int bufferSize = 1024;
+        private Game gameInstance;
+
+
+        public void SetGameInstance(Game game)
+        {
+            gameInstance = game;
+        }
+
 
 
         private string serverMessages;
@@ -102,7 +110,7 @@ namespace Rock_paper_scissors_Client
                 {
                     Socket handler = await listenSocket.AcceptAsync();
                     ServerServicesMessages($"Client connected:  IP({handler.RemoteEndPoint})");
-                    ThreadPool.QueueUserWorkItem(new WaitCallback(HandleClient), handler);
+                    ThreadPool.QueueUserWorkItem(new WaitCallback(HandleClient), (handler, gameInstance));
                 }
             }
             catch (Exception ex)
@@ -114,9 +122,9 @@ namespace Rock_paper_scissors_Client
 
 
 
-        private void HandleClient(object obj)
+        private void HandleClient(object state)
         {
-            Socket handler = (Socket)obj;
+            (Socket handler, Game currentGame) = ((Socket, Game))state;
             ServerServicesMessages("Соккет клиента получен");
             try
             {
@@ -138,20 +146,13 @@ namespace Rock_paper_scissors_Client
                     string response = ProcessRequest(StringParts); // обработка строки запроса от клиента
 
 
-                    if (StringParts == "getgame") // Пример команды для получения сериализованного объекта Game
+                    if (StringParts == "gamedata") // команда для получения сериализованного объекта Game
                     {
- /*                       PrepareObjectToSend serializedData = new PrepareObjectToSend("gamedata", game.SerializeGame());
+                        
+                        PrepareObjectToSend serializedData = new PrepareObjectToSend("gamedata", currentGame.SerializeGame());
                         byte[] serializedGame = serializedData.SerializedObject();
                         // Получение и отправка сериализованного объекта Game клиенту
-                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту*/
-
-                        PrepareObjectToSend serializedData = new PrepareObjectToSend("textdata", Encoding.Unicode.GetBytes(response));
-                        byte[] serializedGame = serializedData.SerializedObject();
-                        // Получение и отправка сериализованного объекта Game клиенту
-                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту   
-
-
-
+                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту
                     }
                     else
                     {

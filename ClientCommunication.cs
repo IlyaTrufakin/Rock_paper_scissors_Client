@@ -74,8 +74,6 @@ namespace Rock_paper_scissors_Client
                 IPEndPoint endpoint = SocketInit(ipAddress, port);
                 clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 clientSocket.Connect(endpoint);
-                // Устанавливаем тайм-аут 1 секунда, на прием данных
-                //clientSocket.ReceiveTimeout = 1000;
                 return "Соединение с сервером установлено";
             }
             catch (Exception ex)
@@ -88,6 +86,12 @@ namespace Rock_paper_scissors_Client
         {
             return clientSocket != null && clientSocket.Connected;
         }
+
+
+
+
+    
+
 
 
         public async Task<object> SendCommandAndGetGameAsync(string command)
@@ -114,8 +118,8 @@ namespace Rock_paper_scissors_Client
                 if (receivedData.StartsWith("gamedata"))
                 {
                     // Если принятые данные представляют объект Game
-                    byte[] gameData = new byte[bytesRead - 8]; // 8 байт - длина маркера "gamedata"
-                    Array.Copy(receiveBuffer, 8, gameData, 0, bytesRead - 8);
+                    byte[] gameData = new byte[bytesRead - 16]; // 16 байт - длина маркера "gamedata"
+                    Array.Copy(receiveBuffer, 16, gameData, 0, bytesRead - 16);
                     return Game.DeserializeGame(gameData);
                 }
                 else if (receivedData.StartsWith("textdata"))

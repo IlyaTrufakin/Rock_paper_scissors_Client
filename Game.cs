@@ -13,13 +13,14 @@ namespace Rock_paper_scissors_Client
     [Serializable]
     public class Game
     {
-        public int Round;
-        public int Victory;
-        public int Defeats;
-        public int Score_Draw;
-        public int Plays;
-        public int PlayerSign;
-        public int ServerSign;
+        public int Round { get; set; }
+        public int Victory { get; set; }
+        public int Defeats { get; set; }
+        public int Score_Draw { get; set; }
+        public int Plays { get; set; }
+        public int PlayerSign { get; set; }
+        public int ServerSign { get; set; }
+
         public Dictionary<int, string> Sign;
         private Random random = new Random();
         private const int playsCount = 5;
@@ -37,6 +38,19 @@ namespace Rock_paper_scissors_Client
                 { 2, "scissors" },
                 { 3, "paper" }
             };
+            PlayerSign = 0;
+            ServerSign = 0;
+        }
+
+
+
+        public void NewGame()
+        {
+            Round = 1;
+            Victory = 0;
+            Defeats = 0;
+            Score_Draw = 0;
+            Plays = 0;
             PlayerSign = 0;
             ServerSign = 0;
         }
@@ -88,12 +102,12 @@ namespace Rock_paper_scissors_Client
         public byte[] SerializeGame()
         {
             string jsonString = JsonSerializer.Serialize(this); // сериализуем текущий объект Game в формат JSON
-            return Encoding.UTF8.GetBytes(jsonString); // возвращаем сериализованные данные в виде массива байтов
+            return Encoding.Unicode.GetBytes(jsonString); // возвращаем сериализованные данные в виде массива байтов
         }
 
         public static Game DeserializeGame(byte[] data)
         {
-            string jsonString = Encoding.UTF8.GetString(data); // преобразуем массив байтов в строку
+            string jsonString = Encoding.Unicode.GetString(data); // преобразуем массив байтов в строку
             return JsonSerializer.Deserialize<Game>(jsonString); // десериализуем объект Game из строки JSON
         }
 

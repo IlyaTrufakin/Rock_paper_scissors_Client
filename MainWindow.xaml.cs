@@ -36,18 +36,51 @@ namespace Rock_paper_scissors_Client
         }
 
 
+
+        private async void Timer_Tick(object sender, EventArgs e) // получаем время с серврера каждую секунду
+        {
+            if (clientCommunication != null)
+            {
+                if (clientCommunication.IsConnected())
+                {
+
+                    try
+                    {
+                        object response = await clientCommunication.SendCommandAndGetGameAsync("gamedata");
+                        game = (Game)response;
+                        //OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                        WindowUpdate();
+                    }
+                    catch (Exception ex)
+                    {
+                        //OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                    }
+
+                }
+                else
+                {
+                    //OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+                }
+                //ScrollTextBlock.ScrollToEnd();
+            }
+        }
+
+
+
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
             if (IsServerCheckBox.IsChecked == true)
             {
                 try
                 {
+                    game = new Game();
                     server = new ServerCommunication("127.0.0.1", 8005);
                     server.NetworkCommandReceived += ServerCommunication_NetworkCommandReceived;
                     server.ErrorOccurred += ServerCommunication_ErrorOccurred;
                     server.ServicesMessagesServer += ServerCommunication_ServicesMessagesServer;
+                    server.SetGameInstance(game);
                     server.Start();
-                    game = new Game();
+
                 }
                 catch (Exception ex)
                 {
@@ -88,32 +121,17 @@ namespace Rock_paper_scissors_Client
 
         }
 
-        private async void Timer_Tick(object sender, EventArgs e) // получаем время с серврера каждую секунду
+ 
+
+
+
+        private void WindowUpdate()
         {
-            /*          if (clientCommunication.IsConnected())
-                      {
-                          try
-                          {
-                              string response = await clientCommunication.SendMessageAndReceiveResponseAsync("timeQuiet");
-                              Status1.Text = "Время Сервера: " + response;
-                              Status2.Text = "Соединение с сервером: установлено";
-                          }
-                          catch (Exception ex)
-                          {
-                              OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
-                          }
-
-                      }
-                      else
-                      {
-                          Status1.Text = "Время Сервера: не доступно";
-                          Status2.Text = "Соединение с сервером: не установлено";
-                      }*/
+            VyctoryTextBlock.Text = game.Victory.ToString();
+            DrawTextBlock.Text = game.Score_Draw.ToString();
+            DefeatTextBlock.Text = game.Defeats.ToString();
+            GameRoundTextBlock.Text = game.Round.ToString() + " РАУНД";
         }
-
-
-
-
 
 
 
@@ -150,8 +168,15 @@ namespace Rock_paper_scissors_Client
             Dispatcher.Invoke(() =>
             {
                 OutputWindow.Text += "Команда серверу: " + command + Environment.NewLine;
+                if (command == "newgame")
+                {
+                    game.NewGame();
+                }
+
+
                 GameHandler(command);
                 ScrollTextBlock.ScrollToEnd();
+                WindowUpdate();
             });
 
         }
@@ -188,10 +213,7 @@ namespace Rock_paper_scissors_Client
             if (signKey != 0) // Проверяем, было ли найдено соответствие
             {
                 OutputWindow.Text += "результат раунда: " + game.Play(signKey) + Environment.NewLine;
-                VyctoryTextBlock.Text = game.Victory.ToString();
-                DrawTextBlock.Text = game.Score_Draw.ToString();
-                DefeatTextBlock.Text = game.Defeats.ToString();
-                GameRoundTextBlock.Text = game.Round.ToString() + " РАУНД";
+
             }
             else
             {
@@ -209,7 +231,9 @@ namespace Rock_paper_scissors_Client
                 try
                 {
                     object response = await clientCommunication.SendCommandAndGetGameAsync("scissors");
+                    //game = (Game)response;
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    //WindowUpdate();
                 }
                 catch (Exception ex)
                 {
@@ -228,11 +252,12 @@ namespace Rock_paper_scissors_Client
         {
             if (clientCommunication.IsConnected())
             {
-
                 try
                 {
                     object response = await clientCommunication.SendCommandAndGetGameAsync("rock");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    //game = (Game)response;
+                    //WindowUpdate();
                 }
                 catch (Exception ex)
                 {
@@ -252,11 +277,12 @@ namespace Rock_paper_scissors_Client
         {
             if (clientCommunication.IsConnected())
             {
-
                 try
                 {
                     object response = await clientCommunication.SendCommandAndGetGameAsync("paper");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                    //game = (Game)response;
+                    //WindowUpdate();
                 }
                 catch (Exception ex)
                 {

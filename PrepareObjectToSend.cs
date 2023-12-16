@@ -23,7 +23,7 @@ namespace Rock_paper_scissors_Client
         public byte[] SerializedObject()
         {
             // Получаем байты для ObjectType
-            byte[] typeBytes = Encoding.UTF8.GetBytes(ObjectType);
+            byte[] typeBytes = Encoding.Unicode.GetBytes(ObjectType);
 
             // Создаем массив для объединенных данных и типа объекта
             byte[] result = new byte[typeBytes.Length + Data.Length];
