@@ -11,20 +11,22 @@ namespace Rock_paper_scissors_Client
 {
 
     [Serializable]
-    internal class Game
+    public class Game
     {
         public int Round;
         public int Victory;
         public int Defeats;
         public int Score_Draw;
         public int Plays;
+        public int PlayerSign;
+        public int ServerSign;
         public Dictionary<int, string> Sign;
         private Random random = new Random();
         private const int playsCount = 5;
 
-        public Game() 
+        public Game()
         {
-            Round = 1;  
+            Round = 1;
             Victory = 0;
             Defeats = 0;
             Score_Draw = 0;
@@ -35,22 +37,26 @@ namespace Rock_paper_scissors_Client
                 { 2, "scissors" },
                 { 3, "paper" }
             };
+            PlayerSign = 0;
+            ServerSign = 0;
         }
 
         public int GetRandomSign()
         {
-            return random.Next(Sign.Count)+1;
+            return random.Next(Sign.Count) + 1;
         }
 
         public string Play(int playerSign, int computerSign = 0)
         {
             if (computerSign == 0)
             {
-            computerSign = GetRandomSign();
-            }
+                computerSign = GetRandomSign();
+             }
 
             string playerChoice = Sign.ContainsKey(playerSign) ? Sign[playerSign] : "Invalid choice";
             string computerChoice = Sign.ContainsKey(computerSign) ? Sign[computerSign] : "Invalid choice";
+            ServerSign = computerSign;
+            PlayerSign = playerSign;
 
             if (Plays >= playsCount)
             {

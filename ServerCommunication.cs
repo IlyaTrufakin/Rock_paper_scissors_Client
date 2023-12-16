@@ -11,16 +11,16 @@ namespace Rock_paper_scissors_Client
 {
     internal class ServerCommunication : INotifyPropertyChanged
     {
-        private readonly int maxClients = 3; // макс. кол-во одновременных клиентов на соккете
+        private readonly int maxClients = 2; // макс. кол-во одновременных клиентов на соккете
         IPEndPoint ipPoint;
         private Socket listenSocket;
-        private Dictionary<Socket, string> connectedClients = new Dictionary<Socket, string>();
         private int clientIdCounter = 0;
         private object lockObject = new object(); // для блокировки доступа нескольких потоков к изменяемому объекту
         public event EventHandler<string> NetworkCommandReceived;
         public event EventHandler<string> ErrorOccurred;
         public event EventHandler<string> ServicesMessagesServer;
         public event PropertyChangedEventHandler PropertyChanged;
+        private const int bufferSize = 1024;
 
 
         private string serverMessages;
@@ -101,15 +101,7 @@ namespace Rock_paper_scissors_Client
                 while (true)
                 {
                     Socket handler = await listenSocket.AcceptAsync();
-                    AddClient(handler);
-
-                    ServerServicesMessages($"Client connected:  {connectedClients[handler]} IP({handler.RemoteEndPoint})");
-                    ServerServicesMessages($"\tList of connected clients: ");
-                    foreach (var clients in connectedClients)
-                    {
-                        ServerServicesMessages($"\t- {clients.Value} IP({clients.Key.RemoteEndPoint})");
-                    }
-
+                    ServerServicesMessages($"Client connected:  IP({handler.RemoteEndPoint})");
                     ThreadPool.QueueUserWorkItem(new WaitCallback(HandleClient), handler);
                 }
             }
@@ -121,19 +113,6 @@ namespace Rock_paper_scissors_Client
 
 
 
-        // Добавление клиента и его идентификатора в словарь connectedClients
-        private void AddClient(Socket clientSocket)
-        {
-            lock (lockObject)
-            {
-                clientIdCounter++;
-                connectedClients.Add(clientSocket, "Client ID#" + clientIdCounter.ToString());
-            }
-        }
-
-
-        // private string Server
-
 
         private void HandleClient(object obj)
         {
@@ -144,7 +123,7 @@ namespace Rock_paper_scissors_Client
 
                 while (true)
                 {
-                    byte[] data = new byte[256];
+                    byte[] data = new byte[bufferSize];
                     StringBuilder receivedString = new StringBuilder();
                     int receivedBytes;
 
@@ -154,25 +133,42 @@ namespace Rock_paper_scissors_Client
                         receivedString.Append(Encoding.Unicode.GetString(data, 0, receivedBytes));
                     } while (handler.Available > 0);
 
-                    //string[] StringParts = receivedString.ToString().Split(':');
                     string StringParts = receivedString.ToString();
-
-                    if (StringParts != "timeQuiet") // когда клиент запрашивает время в автоматическом режиме, не выводим об этом инфо в консоль
-                    {
-                        ServerServicesMessages(DateTime.Now.ToShortTimeString() + ": " + StringParts + $"  (from {connectedClients[handler]})");
-                    }
-
-
                     ReceiveNetworkCommand(StringParts);
                     string response = ProcessRequest(StringParts); // обработка строки запроса от клиента
 
-                    handler.Send(Encoding.Unicode.GetBytes(response)); // отправка ответа клиенту
 
-                    if (response == "Closing" || StringParts == "maxсonnectionlimit") // отработка запроса клиента на закрытие соединения
+                    if (StringParts == "getgame") // Пример команды для получения сериализованного объекта Game
                     {
-                        ServerServicesMessages($"{connectedClients[handler]} - Closing connection...");
+ /*                       PrepareObjectToSend serializedData = new PrepareObjectToSend("gamedata", game.SerializeGame());
+                        byte[] serializedGame = serializedData.SerializedObject();
+                        // Получение и отправка сериализованного объекта Game клиенту
+                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту*/
+
+                        PrepareObjectToSend serializedData = new PrepareObjectToSend("textdata", Encoding.Unicode.GetBytes(response));
+                        byte[] serializedGame = serializedData.SerializedObject();
+                        // Получение и отправка сериализованного объекта Game клиенту
+                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту   
+
+
+
+                    }
+                    else
+                    {
+                        PrepareObjectToSend serializedData = new PrepareObjectToSend("textdata", Encoding.Unicode.GetBytes(response));
+                        byte[] serializedGame = serializedData.SerializedObject();
+                        // Получение и отправка сериализованного объекта текст клиенту
+                        handler.Send(serializedGame); // Отправляем сериализованный объект клиенту                       
+                    }
+
+                    if (response == "Closing" || StringParts == "maxсonnectionlimit")
+                    {
+                        ServerServicesMessages($" - Closing connection...");
                         break;
                     }
+
+
+
                 }
             }
             catch (Exception ex)
@@ -180,14 +176,72 @@ namespace Rock_paper_scissors_Client
                 HandleError(ex.Message);
             }
             finally
-            {
-                connectedClients.Remove(handler);
+            {         
                 handler.Shutdown(SocketShutdown.Both);
                 ServerServicesMessages("Connection closed");
                 handler.Close();
 
             }
         }
+
+
+
+
+
+
+        /*       private void HandleClient(object obj)
+               {
+                   Socket handler = (Socket)obj;
+                   ServerServicesMessages("Соккет клиента получен");
+                   try
+                   {
+
+                       while (true)
+                       {
+                           byte[] data = new byte[bufferSize];
+                           StringBuilder receivedString = new StringBuilder();
+                           int receivedBytes;
+
+                           do
+                           {
+                               receivedBytes = handler.Receive(data);
+                               receivedString.Append(Encoding.Unicode.GetString(data, 0, receivedBytes));
+                           } while (handler.Available > 0);
+
+                           //string[] StringParts = receivedString.ToString().Split(':');
+                           string StringParts = receivedString.ToString();
+
+                           if (StringParts != "timeQuiet") // когда клиент запрашивает время в автоматическом режиме, не выводим об этом инфо в консоль
+                           {
+                               ServerServicesMessages(DateTime.Now.ToShortTimeString() + ": " + StringParts + $"  (from {connectedClients[handler]})");
+                           }
+
+
+                           ReceiveNetworkCommand(StringParts);
+                           string response = ProcessRequest(StringParts); // обработка строки запроса от клиента
+
+                           handler.Send(Encoding.Unicode.GetBytes(response)); // отправка ответа клиенту
+
+                           if (response == "Closing" || StringParts == "maxсonnectionlimit") // отработка запроса клиента на закрытие соединения
+                           {
+                               ServerServicesMessages($"{connectedClients[handler]} - Closing connection...");
+                               break;
+                           }
+                       }
+                   }
+                   catch (Exception ex)
+                   {
+                       HandleError(ex.Message);
+                   }
+                   finally
+                   {
+                       connectedClients.Remove(handler);
+                       handler.Shutdown(SocketShutdown.Both);
+                       ServerServicesMessages("Connection closed");
+                       handler.Close();
+
+                   }
+               }*/
 
 
         private string ProcessRequest(string request)

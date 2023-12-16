@@ -22,6 +22,8 @@ namespace Rock_paper_scissors_Client
         private ServerCommunication server;
         private Game game;
 
+
+
         public MainWindow()
         {
             InitializeComponent();
@@ -57,13 +59,12 @@ namespace Rock_paper_scissors_Client
                 clientCommunication = new ClientCommunication();
                 string connectionResult = clientCommunication.ConnectToServer(ipAddress.Text, portNumber.Text);
                 OutputWindow.Text += connectionResult + Environment.NewLine;
-                SendMessageButton.IsEnabled = clientCommunication.IsConnected();
                 ScrollTextBlock.ScrollToEnd();
                 if (clientCommunication.IsConnected())
                 {
                     try
                     {
-                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync($"newgame");
+                        object response = await clientCommunication.SendCommandAndGetGameAsync($"newgame");
                         OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
                         game = new Game();
                     }
@@ -84,7 +85,7 @@ namespace Rock_paper_scissors_Client
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            SendMessageButton.IsEnabled = false;
+
         }
 
         private async void Timer_Tick(object sender, EventArgs e) // получаем время с серврера каждую секунду
@@ -112,61 +113,7 @@ namespace Rock_paper_scissors_Client
 
 
 
-        private async void SendMessageButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (clientCommunication.IsConnected())
-            {
-                if (InputWindow.Text.Length > 0)
-                {
-                    try
-                    {
-                        string response = await clientCommunication.SendMessageAndReceiveResponseAsync(InputWindow.Text);
-                        OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
-                    }
-                    catch (Exception ex)
-                    {
-                        OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
-                    }
-                }
-            }
-            else
-            {
-                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
-            }
-            ScrollTextBlock.ScrollToEnd();
-        }
 
-
-
-
-
-        private async void InputWindow_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                if (clientCommunication.IsConnected())
-                {
-                    if (InputWindow.Text.Length > 0)
-                    {
-                        try
-                        {
-                            string response = await clientCommunication.SendMessageAndReceiveResponseAsync(InputWindow.Text);
-                            OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
-                        }
-                        catch (Exception ex)
-                        {
-                            OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
-                        }
-                    }
-
-                }
-                else
-                {
-                    OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
-                }
-                ScrollTextBlock.ScrollToEnd();
-            }
-        }
 
 
 
@@ -195,28 +142,6 @@ namespace Rock_paper_scissors_Client
 
         }
 
-        private async void PaperButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (clientCommunication.IsConnected())
-            {
-
-                try
-                {
-                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync("paper");
-                    OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
-                }
-                catch (Exception ex)
-                {
-                    OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
-                }
-
-            }
-            else
-            {
-                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
-            }
-            ScrollTextBlock.ScrollToEnd();
-        }
 
 
         // Обработка сетевых команд от сервера
@@ -226,7 +151,9 @@ namespace Rock_paper_scissors_Client
             {
                 OutputWindow.Text += "Команда серверу: " + command + Environment.NewLine;
                 GameHandler(command);
+                ScrollTextBlock.ScrollToEnd();
             });
+
         }
 
         // Обработка сообщений ошибок сервера
@@ -235,7 +162,9 @@ namespace Rock_paper_scissors_Client
             Dispatcher.Invoke(() =>
             {
                 OutputWindow.Text += "Ошибка сервера: " + errorMessages + Environment.NewLine;
+                ScrollTextBlock.ScrollToEnd();
             });
+
         }
 
 
@@ -246,7 +175,9 @@ namespace Rock_paper_scissors_Client
             Dispatcher.Invoke(() =>
             {
                 OutputWindow.Text += "Сообщение сервера: " + command + Environment.NewLine;
+                ScrollTextBlock.ScrollToEnd();
             });
+
         }
 
 
@@ -266,6 +197,8 @@ namespace Rock_paper_scissors_Client
             {
                 OutputWindow.Text += "Неверный выбор: " + command + Environment.NewLine;
             }
+            ScrollTextBlock.ScrollToEnd();
+
         }
 
         private async void ScissorsButton_Click(object sender, RoutedEventArgs e)
@@ -275,7 +208,7 @@ namespace Rock_paper_scissors_Client
 
                 try
                 {
-                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync("scissors");
+                    object response = await clientCommunication.SendCommandAndGetGameAsync("scissors");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
                 }
                 catch (Exception ex)
@@ -298,7 +231,31 @@ namespace Rock_paper_scissors_Client
 
                 try
                 {
-                    string response = await clientCommunication.SendMessageAndReceiveResponseAsync("rock");
+                    object response = await clientCommunication.SendCommandAndGetGameAsync("rock");
+                    OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
+                }
+                catch (Exception ex)
+                {
+                    OutputWindow.Text += "Ошибка: " + ex.Message + Environment.NewLine;
+                }
+
+            }
+            else
+            {
+                OutputWindow.Text += "Сообщение не отправлено: нет соединения с сервером" + Environment.NewLine;
+            }
+            ScrollTextBlock.ScrollToEnd();
+        }
+
+
+        private async void PaperButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (clientCommunication.IsConnected())
+            {
+
+                try
+                {
+                    object response = await clientCommunication.SendCommandAndGetGameAsync("paper");
                     OutputWindow.Text += "Ответ сервера: " + response + Environment.NewLine;
                 }
                 catch (Exception ex)

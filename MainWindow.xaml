@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Rock_paper_scissors_Client"
         mc:Ignorable="d"
-        Title="КАМЕНЬ-НОЖНИЦЫ-БУМАГА" Height="450" Width="800" MinWidth="800" MinHeight="500">
+        Title="КАМЕНЬ-НОЖНИЦЫ-БУМАГА" Height="450" Width="860" MinWidth="860" MinHeight="500">
 
     <Window.Resources>
         <Style x:Key="MyTextBlockStyle" TargetType="TextBlock">
@@ -25,7 +25,7 @@
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="600"/>
+            <ColumnDefinition Width="700"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
@@ -40,7 +40,7 @@
                 <TextBlock VerticalAlignment="Center">Запустить как сервер</TextBlock>
             </StackPanel>
             <Button x:Name="ConnectButton" DockPanel.Dock="Right" Margin="5"  Width="110" HorizontalAlignment="Right" Click="Button_Click" Content="Connect to server"></Button>
-            <Button x:Name="SendMessageButton" DockPanel.Dock="Right" Margin="5"  Width="90" HorizontalAlignment="Right" Click="SendMessageButton_Click">Send Message</Button>
+            
         </DockPanel>
 
         <Grid Grid.Row="1" Grid.Column="0">
@@ -172,12 +172,6 @@
 
         </Grid>
 
-
-
-
-
-
-
         <StackPanel Grid.Row="2">
 
 
@@ -200,51 +194,13 @@
             </Grid>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" Margin="0" Background="#FF505050">
+        <DockPanel Grid.Row="1" Grid.Column="1"  Margin="0" Background="#FF505050" >
             <!-- область вывода сетевых данных -->
-            <TextBlock VerticalAlignment="Center" Background="#FFBBBBBB" TextAlignment="Center" Foreground="#FF464646">Обмен сетевыми данными</TextBlock>
-            <ScrollViewer x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Grid.Row="4" Padding="5,5,5,5" >
+            <TextBlock DockPanel.Dock="Top" VerticalAlignment="Center" Background="#FFBBBBBB" TextAlignment="Center" Foreground="#FF464646">Обмен сетевыми данными</TextBlock>
+            <ScrollViewer DockPanel.Dock="Top" x:Name="ScrollTextBlock" VerticalScrollBarVisibility="Auto" Padding="5,5,5,5" >
                 <TextBlock x:Name="OutputWindow" TextWrapping="WrapWithOverflow" Foreground="#FFE8E8E8" />
             </ScrollViewer>
-        </StackPanel>
-
-
-
-
-
-        <TextBlock Height="100" Padding="5,2,0,0" Grid.Row="5" Background="PowderBlue" TextWrapping="Wrap" VerticalAlignment="Center">
-        Ввод команд к серверу:<LineBreak/> <LineBreak/> 
-        bye - для закрытия соединения<LineBreak/>
-        time - получить время и дату на сервере<LineBreak/>
-        info - получить тип операц. системы сервера<LineBreak/>
-        getQuote - для получения ответа от сервера - случайной цитаты
-        </TextBlock>
-
-
-        <TextBox x:Name="InputWindow" Grid.Row="6" BorderThickness="0"  Padding="3,5,5,5" KeyDown="InputWindow_KeyDown"/>
-
-
-
-        <StatusBar  Grid.Row="7" Height="25"  Background="PowderBlue"  >
-            <Grid >
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
-                </Grid.ColumnDefinitions>
-
-                <StatusBarItem Grid.Column="0" Margin="0,0,15,0" Height="23"  HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="#FF91B3B7">
-                    <TextBlock x:Name="Status1"  Padding="5,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                </StatusBarItem>
-                <StatusBarItem Grid.Column="1" Margin="0,0,15,0" Height="23" HorizontalAlignment="Stretch"   VerticalAlignment="Center" Background="#FF91B3B7">
-                    <TextBlock x:Name="Status2"  Padding="5,0,10,0" VerticalAlignment="Center"   HorizontalAlignment="Stretch" Text="DFG"/>
-                </StatusBarItem>
-                <StatusBarItem  Grid.Column="2" Margin="0,0,15,0" Height="23" HorizontalAlignment="Stretch"  VerticalAlignment="Center" Background="#FF91B3B7">
-                    <TextBlock x:Name="Status3"  Padding="5,0,10,0" VerticalAlignment="Center"   HorizontalAlignment="Stretch" Text="test"/>
-                </StatusBarItem>
-            </Grid>
-        </StatusBar>
-
+        </DockPanel>
 
 
     </Grid>
